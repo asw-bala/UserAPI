@@ -1,0 +1,1254 @@
+{
+	"info": {
+		"_postman_id": "b3bdf472-af92-4139-a67f-53be27280528",
+		"name": "USER-API-BOOTCAMP",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "38383743"
+	},
+	"item": [
+		{
+			"name": "Create User",
+			"item": [
+				{
+					"name": "CreateUser",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"//console.log(pm.info.iteration);\r",
+									"\r",
+									"\r",
+									"if(pm.iterationData.get(\"Operation\")!=\"POST\")\r",
+									"{\r",
+									"    pm.execution.skipRequest();\r",
+									"\r",
+									"}\r",
+									"else\r",
+									"console.log(\"Starting Post execution\");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"//console.log(\"Executed\");\r",
+									"\r",
+									"//Schema Validation\r",
+									"const schema = {\r",
+									"    \"type\": \"object\",\r",
+									"    \"properties\": {\r",
+									"        \"user_id\": { \"type\": \"integer\" },\r",
+									"\t\t\"user_first_name\": {\"type\":  \"string\"},\r",
+									"\t\t\"user_last_name\": {\"type\": \"string\"},\r",
+									"\t\t\"user_contact_number\": {\"type\": \"integer\"},\r",
+									"\t\t\"user_email_id\": {\"type\": \"string\"},\r",
+									"\t\t\"creation_time\": {\"type\": \"string\"},\r",
+									"\t\t\"last_mod_time\": {\"type\": \"string\"},\r",
+									"\t\t\"userAddress\":\r",
+									"\t\t{\r",
+									"\t\t\t\"type\": \"object\",\r",
+									"            \"properties\": {\r",
+									"\t\t\t\t\"addressId\": { \"type\": \"integer\"},\r",
+									"\t\t\t\t\"plotNumber\": { \"type\": \"string\"},\r",
+									"\t\t\t\t\"street\": { \"type\": \"string\"},\r",
+									"\t\t\t\t\"state\": { \"type\": \"string\"},\r",
+									"\t\t\t\t\"country\": { \"type\": \"string\"},\r",
+									"\t\t\t\t\"zipCode\": { \"type\": \"integer\"},          \r",
+									"            },\r",
+									"\t\t\t\"required\": [\"addressId\"]\r",
+									"        }\r",
+									"    },\r",
+									"    \"required\": [\"user_id\",\"creation_time\",\"last_mod_time\"]\r",
+									"};\r",
+									"pm.test(\"Validate schema\", () => {\r",
+									"    if(pm.response.code === 201)\r",
+									"        pm.response.to.have.jsonSchema(schema);\r",
+									"    else\r",
+									"        pm.test(\"The status code is not 201 Ok. Schema not checked\")    \r",
+									"\r",
+									"});\r",
+									"\r",
+									"const resp =pm.response.json();\r",
+									"console.log(resp);\r",
+									"pm.test(\"Check Status Code\",function()\r",
+									"{\r",
+									"    console.log(pm.iterationData.get(\"statusCode\"));\r",
+									"    var statusCodeActual = pm.response.code;\r",
+									"    var statusCodeExpected = pm.iterationData.get(\"statusCode\");\r",
+									"    pm.expect(statusCodeExpected).to.eql(statusCodeActual);\r",
+									"\r",
+									"    pm.expect(pm.iterationData.get(\"statusMessage\")).to.eql(pm.response.status);\r",
+									"\r",
+									"    if(statusCodeActual===201)\r",
+									"    {\r",
+									"           pm.collectionVariables.set((\"userid\"+(pm.info.iteration+1)+\"_created\"),resp.user_id);\r",
+									"           pm.collectionVariables.set((\"userFirstName\"+(pm.info.iteration+1)+\"_created\"),resp.user_first_name);\r",
+									"           console.log(\"userid\"+(pm.info.iteration+1)+\"_created\" +resp.user_id);\r",
+									"              console.log(\"userFirstName\"+(pm.info.iteration+1)+\"_created\"+resp.user_first_name);\r",
+									"\r",
+									"    }\r",
+									"\r",
+									"\r",
+									"\r",
+									"})\r",
+									"pm.test(\"Check values\",()=>{\r",
+									"    if(pm.response.code === 201)\r",
+									"    {\r",
+									"    var dt_useremail = pm.iterationData.get(\"userEmailId\");\r",
+									"\r",
+									"    var email = resp.user_email_id;\r",
+									"    //console.log(email);\r",
+									"    //console.log(dt_useremail);\r",
+									"    pm.expect(email).to.equal(dt_useremail);\r",
+									"    pm.expect(resp.user_contact_number).to.equal(pm.iterationData.get(\"userContactNumber\"));\r",
+									"    pm.expect(resp.user_last_name).to.equal(pm.iterationData.get(\"userLastName\"))\r",
+									"    pm.expect(resp.user_first_name).to.equal(pm.iterationData.get(\"userFirstName\"))\r",
+									"    }\r",
+									"    else\r",
+									"        pm.test(\"The status code is not 201 Ok. Values not checked\")\r",
+									"        \r",
+									"    \r",
+									"    \r",
+									"})\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{password}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{userName}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"userAddress\": {\r\n    \"plotNumber\": \"{{plotNumber}}\",\r\n    \"street\": \"{{street}}\",\r\n    \"state\": \"{{state}}\",\r\n    \"country\": \"{{country}}\",\r\n    \"zipCode\": \"{{zipCode}}\"\r\n  },\r\n  \"user_first_name\": \"{{userFirstName}}\",\r\n  \"user_last_name\": \"{{userLastName}}\",\r\n  \"user_contact_number\":{{userContactNumber}},\r\n  \"user_email_id\": \"{{userEmailId}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}{{endPoint}}",
+							"host": [
+								"{{baseURL}}{{endPoint}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "basic",
+				"basic": [
+					{
+						"key": "password",
+						"value": "{{password}}",
+						"type": "string"
+					},
+					{
+						"key": "username",
+						"value": "{{userName}}",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Get User",
+			"item": [
+				{
+					"name": "GetUsers",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"\r",
+									"console.log(pm.info.iteration);\r",
+									"if(pm.iterationData.get(\"Operation\")!=\"GETUSERS\")\r",
+									"{\r",
+									"    pm.execution.skipRequest();\r",
+									"\r",
+									"}\r",
+									"else\r",
+									"console.log(\"Starting Get execution\");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const resp =pm.response.json();\r",
+									"console.log(resp);\r",
+									"pm.test(\"Check Status Code\",function()\r",
+									"{\r",
+									"    console.log(pm.iterationData.get(\"statusCode\"));\r",
+									"    var statusCodeActual = pm.response.code;\r",
+									"    var statusCodeExpected = pm.iterationData.get(\"statusCode\");\r",
+									"    pm.expect(statusCodeExpected).to.eql(statusCodeActual);\r",
+									"\r",
+									"    pm.expect(pm.iterationData.get(\"statusMessage\")).to.eql(pm.response.status);\r",
+									"    \r",
+									"})"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}{{endPoint}}",
+							"host": [
+								"{{baseURL}}{{endPoint}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetUsersById",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"//console.log(pm.info.iteration);\r",
+									"if(pm.iterationData.get(\"Operation\")!=\"GETUSERSBYID\")\r",
+									"{\r",
+									"    pm.execution.skipRequest();\r",
+									"\r",
+									"}\r",
+									"else\r",
+									"console.log(\"Starting Get Users By Id execution\");\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const resp =pm.response.json();\r",
+									"console.log(resp);\r",
+									"pm.test(\"Check Status Code\",function()\r",
+									"{\r",
+									"    console.log(pm.iterationData.get(\"statusCode\"));\r",
+									"    var statusCodeActual = pm.response.code;\r",
+									"    var statusCodeExpected = pm.iterationData.get(\"statusCode\");\r",
+									"    pm.expect(statusCodeExpected).to.eql(statusCodeActual);\r",
+									"\r",
+									"    pm.expect(pm.iterationData.get(\"statusMessage\")).to.eql(pm.response.status);\r",
+									"})"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}{{endPoint}}/{{userid1_created}}",
+							"host": [
+								"{{baseURL}}{{endPoint}}"
+							],
+							"path": [
+								"{{userid1_created}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetUsersByName",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"//console.log(pm.info.iteration);\r",
+									"if(pm.iterationData.get(\"Operation\")!=\"GETUSERSBYNAME\")\r",
+									"{\r",
+									"    pm.execution.skipRequest();\r",
+									"\r",
+									"}\r",
+									"else\r",
+									"console.log(\"Starting Get Users By Name execution\");\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const resp =pm.response.json();\r",
+									"console.log(resp);\r",
+									"pm.test(\"Check Status Code\",function()\r",
+									"{\r",
+									"    console.log(pm.iterationData.get(\"statusCode\"));\r",
+									"    var statusCodeActual = pm.response.code;\r",
+									"    var statusCodeExpected = pm.iterationData.get(\"statusCode\");\r",
+									"    pm.expect(statusCodeExpected).to.eql(statusCodeActual);\r",
+									"\r",
+									"    pm.expect(pm.iterationData.get(\"statusMessage\")).to.eql(pm.response.status);\r",
+									"})"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{password}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{userName}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}{{endPoint}}/{{userFirstName1_created}}",
+							"host": [
+								"{{baseURL}}{{endPoint}}"
+							],
+							"path": [
+								"{{userFirstName1_created}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "basic",
+				"basic": [
+					{
+						"key": "username",
+						"value": "{{userName}}",
+						"type": "string"
+					},
+					{
+						"key": "password",
+						"value": "{{password}}",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Update User",
+			"item": [
+				{
+					"name": "UpdateUser",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"//console.log(pm.info.iteration);\r",
+									"if(pm.iterationData.get(\"Operation\")!=\"PUT\")\r",
+									"{\r",
+									"    pm.execution.skipRequest();\r",
+									"\r",
+									"}\r",
+									"else\r",
+									"console.log(\"Starting Put execution\");\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"console.log(\"Executed\");\r",
+									"\r",
+									"//Schema Validation\r",
+									"const schema = {\r",
+									"    \"type\": \"object\",\r",
+									"    \"properties\": {\r",
+									"        \"user_id\": { \"type\": \"integer\" },\r",
+									"\t\t\"user_first_name\": {\"type\":  \"string\"},\r",
+									"\t\t\"user_last_name\": {\"type\": \"string\"},\r",
+									"\t\t\"user_contact_number\": {\"type\": \"integer\"},\r",
+									"\t\t\"user_email_id\": {\"type\": \"string\"},\r",
+									"\t\t\"creation_time\": {\"type\": \"string\"},\r",
+									"\t\t\"last_mod_time\": {\"type\": \"string\"},\r",
+									"\t\t\"userAddress\":\r",
+									"\t\t{\r",
+									"\t\t\t\"type\": \"object\",\r",
+									"            \"properties\": {\r",
+									"\t\t\t\t\"addressId\": { \"type\": \"integer\"},\r",
+									"\t\t\t\t\"plotNumber\": { \"type\": \"string\"},\r",
+									"\t\t\t\t\"street\": { \"type\": \"string\"},\r",
+									"\t\t\t\t\"state\": { \"type\": \"string\"},\r",
+									"\t\t\t\t\"country\": { \"type\": \"string\"},\r",
+									"\t\t\t\t\"zipCode\": { \"type\": \"integer\"},          \r",
+									"            },\r",
+									"\t\t\t\"required\": [\"addressId\"]\r",
+									"        }\r",
+									"    },\r",
+									"    \"required\": [\"user_id\",\"creation_time\",\"last_mod_time\"]\r",
+									"};\r",
+									"pm.test(\"Validate schema\", () => {\r",
+									"    if(pm.response.code === 200)\r",
+									"        pm.response.to.have.jsonSchema(schema);\r",
+									"    else\r",
+									"        pm.test(\"The status code is not 200 Ok. Values not checked\")\r",
+									"\r",
+									"});\r",
+									"\r",
+									"const resp =pm.response.json();\r",
+									"console.log(resp);\r",
+									"pm.test(\"Check Status Code\",function()\r",
+									"{\r",
+									"    console.log(pm.iterationData.get(\"statusCode\"));\r",
+									"    var statusCodeActual = pm.response.code;\r",
+									"    var statusCodeExpected = pm.iterationData.get(\"statusCode\");\r",
+									"    pm.expect(statusCodeExpected).to.eql(statusCodeActual);\r",
+									"\r",
+									"    pm.expect(pm.iterationData.get(\"statusMessage\")).to.eql(pm.response.status);\r",
+									"\r",
+									"    \r",
+									"\r",
+									"\r",
+									"\r",
+									"})\r",
+									"pm.test(\"Check values\",()=>{\r",
+									"    if(pm.response.code === 200)\r",
+									"    {\r",
+									"    var dt_useremail = pm.iterationData.get(\"userEmailId\");\r",
+									"\r",
+									"    var email = resp.user_email_id;\r",
+									"    console.log(email);\r",
+									"    console.log(dt_useremail);\r",
+									"    pm.expect(email).to.equal(dt_useremail);\r",
+									"    pm.expect(resp.user_contact_number).to.equal(pm.iterationData.get(\"userContactNumber\"));\r",
+									"    pm.expect(resp.user_last_name).to.equal(pm.iterationData.get(\"userLastName\"))\r",
+									"    pm.expect(resp.user_first_name).to.equal(pm.iterationData.get(\"userFirstName\"))\r",
+									"    }\r",
+									"        else\r",
+									"    //pm.expect.fail(\"The status code is not 200 OK. Values not checked\")\r",
+									"    pm.test(\"The status code is not 200 OK. Values not checked\")\r",
+									"    \r",
+									"})\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{password}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{userName}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"userAddress\": {\r\n    \"plotNumber\": \"{{plotNumber}}\",\r\n    \"street\": \"{{street}}\",\r\n    \"state\": \"{{state}}\",\r\n    \"country\": \"{{country}}\",\r\n    \"zipCode\": \"{{zipCode}}\"\r\n  },\r\n  \"user_first_name\": \"{{userFirstName}}\",\r\n  \"user_last_name\": \"{{userLastName}}\",\r\n  \"user_contact_number\":{{userContactNumber}},\r\n  \"user_email_id\": \"{{userEmailId}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}{{endPoint}}/{{userid1_created}}",
+							"host": [
+								"{{baseURL}}{{endPoint}}"
+							],
+							"path": [
+								"{{userid1_created}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Delete User",
+			"item": [
+				{
+					"name": "DeleteUserById",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"//console.log(pm.info.iteration);\r",
+									"if(pm.iterationData.get(\"Operation\")!=\"DELETEUSERBYID\")\r",
+									"{\r",
+									"    pm.execution.skipRequest();\r",
+									"\r",
+									"}\r",
+									"else\r",
+									"console.log(\"Starting Delete execution\");\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const resp =pm.response.json();\r",
+									"console.log(resp);\r",
+									"pm.test(\"Check Status Code\",function()\r",
+									"{\r",
+									"    console.log(pm.iterationData.get(\"statusCode\"));\r",
+									"    var statusCodeActual = pm.response.code;\r",
+									"    var statusCodeExpected = pm.iterationData.get(\"statusCode\");\r",
+									"    pm.expect(statusCodeExpected).to.eql(statusCodeActual);\r",
+									"\r",
+									"    pm.expect(pm.iterationData.get(\"statusMessage\")).to.eql(pm.response.status);\r",
+									"})\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{password}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{userName}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}{{endPoint}}/{{userid1_created}}",
+							"host": [
+								"{{baseURL}}{{endPoint}}"
+							],
+							"path": [
+								"{{userid1_created}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DeleteUserByName",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"//console.log(pm.info.iteration);\r",
+									"if(pm.iterationData.get(\"Operation\")!=\"DELETEUSERBYNAME\")\r",
+									"{\r",
+									"    pm.execution.skipRequest();\r",
+									"\r",
+									"}\r",
+									"else\r",
+									"console.log(\"Starting Delete execution by name\");\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const resp =pm.response.json();\r",
+									"console.log(resp);\r",
+									"pm.test(\"Check Status Code\",function()\r",
+									"{\r",
+									"    console.log(pm.iterationData.get(\"statusCode\"));\r",
+									"    var statusCodeActual = pm.response.code;\r",
+									"    var statusCodeExpected = pm.iterationData.get(\"statusCode\");\r",
+									"    pm.expect(statusCodeExpected).to.eql(statusCodeActual);\r",
+									"\r",
+									"    pm.expect(pm.iterationData.get(\"statusMessage\")).to.eql(pm.response.status);\r",
+									"})\r",
+									"//pm.execution.setNextRequest(null);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{password}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{userName}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}{{endPoint}}/{{userFirstName2_created}}",
+							"host": [
+								"{{baseURL}}{{endPoint}}"
+							],
+							"path": [
+								"{{userFirstName2_created}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "CreateUser",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.execution.skipRequest();"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//Schema Validation\r",
+							"const schema = {\r",
+							"    \"type\": \"object\",\r",
+							"    \"properties\": {\r",
+							"        \"user_id\": { \"type\": \"integer\" },\r",
+							"\t\t\"user_first_name\": {\"type\":  \"string\"},\r",
+							"\t\t\"user_last_name\": {\"type\": \"string\"},\r",
+							"\t\t\"user_contact_number\": {\"type\": \"integer\"},\r",
+							"\t\t\"user_email_id\": {\"type\": \"string\"},\r",
+							"\t\t\"creation_time\": {\"type\": \"string\"},\r",
+							"\t\t\"last_mod_time\": {\"type\": \"string\"},\r",
+							"\t\t\"userAddress\":\r",
+							"\t\t{\r",
+							"\t\t\t\"type\": \"object\",\r",
+							"            \"properties\": {\r",
+							"\t\t\t\t\"addressId\": { \"type\": \"integer\"},\r",
+							"\t\t\t\t\"plotNumber\": { \"type\": \"string\"},\r",
+							"\t\t\t\t\"street\": { \"type\": \"string\"},\r",
+							"\t\t\t\t\"state\": { \"type\": \"string\"},\r",
+							"\t\t\t\t\"country\": { \"type\": \"string\"},\r",
+							"\t\t\t\t\"zipCode\": { \"type\": \"integer\"},          \r",
+							"            }\r",
+							"        },\r",
+							"    }\r",
+							"};\r",
+							"pm.test(\"Validate schema\", () => {\r",
+							"    pm.response.to.have.jsonSchema(schema);\r",
+							"});\r",
+							"pm.test(\"Status code check\",function()\r",
+							"{\r",
+							"    pm.response.to.have.status(201);\r",
+							"})\r",
+							"\r",
+							"//pm.response.to.be\r",
+							"pm.test(\"Response check - Valid and have body\",function()\r",
+							"{\r",
+							"    pm.response.to.be.json;\r",
+							"    pm.response.to.be.withBody;\r",
+							"    //pm.response.to.not.be.error; \r",
+							"    //pm.response.to.not.have.jsonBody(\"error\"); \r",
+							"})\r",
+							"const resp =pm.response.json();\r",
+							"    var statusCodeActual = pm.response.code;\r",
+							"    var statusActual = pm.response.status;\r",
+							"    console.log(statusCodeActual);\r",
+							"        console.log(statusActual);\r",
+							"\r",
+							"pm.test(\"Check values\",()=>{ //Fixed pm.test to resolve TypeError\r",
+							"    if(pm.response.code === 201)\r",
+							"    {\r",
+							"    //var dt_useremail = pm.iterationData.get(\"userEmailId\");\r",
+							"\r",
+							"    var email = resp.user_email_id;\r",
+							"    console.log(email);\r",
+							"    //console.log(dt_useremail);\r",
+							"    pm.expect(email).to.equal(\"teamfour@gmail.com\");\r",
+							"    pm.expect(resp.user_contact_number).to.equal(3332227891);\r",
+							"    pm.expect(resp.user_last_name).to.equal(pm.iterationData.get(\"userLastName\"))\r",
+							"    pm.expect(resp.user_first_name).to.equal(pm.iterationData.get(\"userFirstName\"))\r",
+							"    }\r",
+							"    else\r",
+							"    //pm.expect.fail(\"The status code is not 201 Ok. Values not checked\")\r",
+							"        pm.test(\"The status code is not 200 OK. Values not checked\") //Changed pm.info to pm.test\r",
+							"})\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "userapi@october",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "Numpy@gmail.com",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"userAddress\": {\r\n        \"plotNumber\": \"AS-99\",\r\n        \"street\": \"Gorniak\",\r\n        \"state\": \"MI\",\r\n        \"country\": \"USA\",\r\n        \"zipCode\": \"7896\"\r\n    },\r\n    \"user_first_name\": \"TesterAA\",\r\n    \"user_last_name\": \"Numpy\",\r\n    \"user_contact_number\": \"3332227892\",\r\n    \"user_email_id\": \"teamfour1@gmail.com\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://userserviceapp-f5a54828541b.herokuapp.com/uap/createusers",
+					"protocol": "https",
+					"host": [
+						"userserviceapp-f5a54828541b",
+						"herokuapp",
+						"com"
+					],
+					"path": [
+						"uap",
+						"createusers"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetUser",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//pm.response.to.have\r",
+							"pm.test(\"Status code check\",function()\r",
+							"{\r",
+							"    pm.response.to.have.status(200);\r",
+							"})\r",
+							"//pm.response.to.be\r",
+							"pm.test(\"Response check - Valid and have body\",function()\r",
+							"{\r",
+							"    pm.response.to.be.ok;\r",
+							"    pm.response.to.be.json;\r",
+							"    pm.response.to.be.withBody;\r",
+							"    pm.response.to.not.be.error; \r",
+							"    pm.response.to.not.have.jsonBody(\"error\"); \r",
+							"})\r",
+							"const resp =pm.response.json();\r",
+							"    var statusCodeActual = pm.response.status;\r",
+							"    console.log(statusCodeActual);\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.execution.skipRequest();"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://userserviceapp-f5a54828541b.herokuapp.com/uap/users",
+					"protocol": "https",
+					"host": [
+						"userserviceapp-f5a54828541b",
+						"herokuapp",
+						"com"
+					],
+					"path": [
+						"uap",
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetUserById",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//pm.response.to.have\r",
+							"pm.test(\"Status code check\",function()\r",
+							"{\r",
+							"    pm.response.to.have.status(200);\r",
+							"})\r",
+							"//pm.response.to.be\r",
+							"pm.test(\"Response check - Valid and have body\",function()\r",
+							"{\r",
+							"    pm.response.to.be.ok;\r",
+							"    pm.response.to.be.json;\r",
+							"    pm.response.to.be.withBody;\r",
+							"    pm.response.to.not.be.error; \r",
+							"    pm.response.to.not.have.jsonBody(\"error\");\r",
+							"    pm.expect(pm.response.json().user_id).to.equal(7054);\r",
+							"    pm.expect(pm.response.json().user_first_name).to.equal(\"MclaughlinLovrone\");\r",
+							"\r",
+							"})\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.execution.skipRequest();"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://userserviceapp-f5a54828541b.herokuapp.com/uap/users/username/TesterAL",
+					"protocol": "https",
+					"host": [
+						"userserviceapp-f5a54828541b",
+						"herokuapp",
+						"com"
+					],
+					"path": [
+						"uap",
+						"users",
+						"username",
+						"TesterAL"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetUserByName",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//pm.response.to.have\r",
+							"pm.test(\"Status code check\",function()\r",
+							"{\r",
+							"    pm.response.to.have.status(200);\r",
+							"})\r",
+							"//pm.response.to.be\r",
+							"pm.test(\"Response check - Valid and have body\",function()\r",
+							"{\r",
+							"    pm.response.to.be.ok;\r",
+							"    pm.response.to.be.json;\r",
+							"    pm.response.to.be.withBody;\r",
+							"    pm.response.to.not.be.error; \r",
+							"    pm.response.to.not.have.jsonBody(\"error\");\r",
+							"    pm.expect(pm.response.json().user_id).to.equal(7054);\r",
+							"    pm.expect(pm.response.json().user_first_name).to.equal(\"MclaughlinLovrone\");\r",
+							"\r",
+							"})\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.execution.skipRequest();"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://userserviceapp-f5a54828541b.herokuapp.com/uap/user/7054",
+					"protocol": "https",
+					"host": [
+						"userserviceapp-f5a54828541b",
+						"herokuapp",
+						"com"
+					],
+					"path": [
+						"uap",
+						"user",
+						"7054"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "UpdateUser",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.execution.skipRequest();"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//Schema Validation\r",
+							"const schema = {\r",
+							"    \"type\": \"object\",\r",
+							"    \"properties\": {\r",
+							"        \"user_id\": { \"type\": \"integer\" },\r",
+							"\t\t\"user_first_name\": {\"type\":  \"string\"},\r",
+							"\t\t\"user_last_name\": {\"type\": \"string\"},\r",
+							"\t\t\"user_contact_number\": {\"type\": \"integer\"},\r",
+							"\t\t\"user_email_id\": {\"type\": \"string\"},\r",
+							"\t\t\"creation_time\": {\"type\": \"string\"},\r",
+							"\t\t\"last_mod_time\": {\"type\": \"string\"},\r",
+							"\t\t\"userAddress\":\r",
+							"\t\t{\r",
+							"\t\t\t\"type\": \"object\",\r",
+							"            \"properties\": {\r",
+							"\t\t\t\t\"addressId\": { \"type\": \"integer\"},\r",
+							"\t\t\t\t\"plotNumber\": { \"type\": \"string\"},\r",
+							"\t\t\t\t\"street\": { \"type\": \"string\"},\r",
+							"\t\t\t\t\"state\": { \"type\": \"string\"},\r",
+							"\t\t\t\t\"country\": { \"type\": \"string\"},\r",
+							"\t\t\t\t\"zipCode\": { \"type\": \"integer\"},          \r",
+							"            },\r",
+							"\t\t\t\"required\": [\"addressId\"]\r",
+							"        }\r",
+							"    },\r",
+							"    \"required\": [\"user_id\",\"creation_time\",\"last_mod_time\"]\r",
+							"};\r",
+							"pm.test(\"Validate schema\", () => {\r",
+							"    pm.response.to.have.jsonSchema(schema);\r",
+							"\r",
+							"});\r",
+							"pm.test(\"Status code check\",function()\r",
+							"{\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"//pm.response.to.be\r",
+							"pm.test(\"Response check - Valid and have body\",function()\r",
+							"{\r",
+							"    pm.response.to.be.json;\r",
+							"    pm.response.to.be.withBody;\r",
+							"    pm.response.to.not.be.error; \r",
+							"    pm.response.to.not.have.jsonBody(\"error\"); \r",
+							"});\r",
+							"const resp = pm.response.json();\r",
+							"var statusCodeActual = pm.response.code;\r",
+							"var statusActual = pm.response.status;\r",
+							"console.log(statusCodeActual);\r",
+							"console.log(statusActual);\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "userapi@october",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "Numpy@gmail.com",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"userAddress\": {\r\n        \"plotNumber\": \"AS-99\",\r\n        \"street\": \"Gorniak\",\r\n        \"state\": \"MI\",\r\n        \"country\": \"USA\",\r\n        \"zipCode\": \"7896\"\r\n    },\r\n    \"user_first_name\": \"TesterAA\",\r\n    \"user_last_name\": \"Numpy\",\r\n    \"user_contact_number\": \"1237874595\",\r\n    \"user_email_id\": \"testle@gmail.com\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://userserviceapp-f5a54828541b.herokuapp.com/uap/updateuser/7598",
+					"protocol": "https",
+					"host": [
+						"userserviceapp-f5a54828541b",
+						"herokuapp",
+						"com"
+					],
+					"path": [
+						"uap",
+						"updateuser",
+						"7598"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DeleteUser",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.execution.skipRequest();"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{password}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{userName}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "https://userserviceapp-f5a54828541b.herokuapp.com/uap/deleteuser/7509",
+					"protocol": "https",
+					"host": [
+						"userserviceapp-f5a54828541b",
+						"herokuapp",
+						"com"
+					],
+					"path": [
+						"uap",
+						"deleteuser",
+						"7509"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					"pm.test(\"Check Response time\", function(){\r",
+					"    pm.expect(pm.response.responseTime).to.be.below(1500);\r",
+					"})"
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "userid1_created",
+			"value": ""
+		},
+		{
+			"key": "userFirstName1_created",
+			"value": ""
+		},
+		{
+			"key": "userid0_created",
+			"value": ""
+		},
+		{
+			"key": "userFirstName0_created",
+			"value": ""
+		},
+		{
+			"key": "userid2_created",
+			"value": ""
+		},
+		{
+			"key": "userFirstName2_created",
+			"value": ""
+		}
+	]
+}
